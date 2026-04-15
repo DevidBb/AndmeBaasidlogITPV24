@@ -2,7 +2,7 @@
 andmebaaside haldusega seotud sql kood
 
 ## põhimõisted
-- Andmebaasihaldussüsteemid - tarkvara, millega abil saab luua andmebaas(mariaDB - XAMPP,SQL Server- SQL Server Managment Studio)
+- Andmebaasihaldussüsteemid - tarkvara, millega abil saab luua andmebaas(mariaDB - XAMPP,SQL Server- SQL Server Managment Studio) (server name (localdb)\MSSQLLocalDB)
 - Andmebaas - strukteeritud andmete kogun
 - tabel olem сущности
 Veerg väli поле 
