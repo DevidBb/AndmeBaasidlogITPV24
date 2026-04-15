@@ -51,7 +51,7 @@ mitmele-mitmele
 
 
 SQL CODE
-``
+```
 Create Database Logitpv24baas
 
 --ab kustutamine
@@ -118,4 +118,4 @@ values ('a','a','a','a','a');
 
 select * from koolitus;
 
-``
+```
