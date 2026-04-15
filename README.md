@@ -15,7 +15,12 @@ SQL-structuured query language - strukteeritud päringu keel
 DDL - data definition language 
 DML - data manipulation
 
-#Piirangud - ограничения - CINSTRAINT (5)
+# Piirangud - ограничения - CINSTRAINT (5)
+1. primary key
+2. foreign key
+3. not null
+4. check
+5. 
 # Andmeetüübid
 ```
 1. int,smallint, decimal(5,2) - numbrilised
