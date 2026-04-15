@@ -1,7 +1,15 @@
+## sisukord
+- [põhimõisted](#põhimõisted)
+- [piirangud](#Piirangud)
+- [andmetüübid](#andmetüübid)
+
+
+
+
 # AndmeBaasidlogITPV24
 andmebaaside haldusega seotud sql kood
 
-## põhimõisted
+# põhimõisted
 - Andmebaasihaldussüsteemid - tarkvara, millega abil saab luua andmebaas(mariaDB - XAMPP,SQL Server- SQL Server Managment Studio) (server name (localdb)\MSSQLLocalDB)
 - Andmebaas - strukteeritud andmete kogun
 - tabel olem сущности
@@ -29,3 +37,14 @@ DML - data manipulation
 4. boolean, bit ,bool - loogilised
 ```
 `` - ctrl+e
+# tabelivahelised seosed
+üks-ühile (nt naine-mee)
+üks-mitmele (nt naine-lapsed)
+mitmele-mitmele
+<img width="718" height="383" alt="{E0F4D3C8-3DC0-493B-A89C-6E27879854B5}" src="https://github.com/user-attachments/assets/9ae0dfbe-665d-4349-a1a0-9fd4d0c7d3f2" />
+
+<img width="554" height="248" alt="{657E8891-B93F-4C50-AE7C-648B3F9B4E4B}" src="https://github.com/user-attachments/assets/19c9fadf-5029-468b-8d28-02ffa456a071" />
+
+Какие из приведенных ниже типов SQL могут использоваться для хранения действительных чисел?
+<img width="172" height="213" alt="{75C7B98E-9147-4884-B442-0AD7C52522FA}" src="https://github.com/user-attachments/assets/20f1050a-0f4d-4f02-9ccc-99775074e9e6" />
+
