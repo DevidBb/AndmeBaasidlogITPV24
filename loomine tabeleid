@@ -1,0 +1,30 @@
+Create Database Logitpv24baas
+
+--ab kustutamine
+drop database veebipood;
+
+
+use Logitpv24baas;
+CREATE TABLE tootaja(
+
+tootajaID int PRIMARY KEY identity(1,1), --identiry - automaatselt kasvav arv
+eesnimi varchar(15) not null,
+perekonnanimi varchar(30) not null,
+synniaeg date,
+aadres TEXT,
+koormus int CHECK (koormus>0), -- piirang,et koormus >0
+aktiivne bit);
+
+--taabeli kuuvamine 
+select * from tootaja;
+
+--andmete lisamine tabelisse
+insert into tootaja(eesnimi,perekonnanimi, synniaeg,aadres,koormus,aktiivne)
+values ('markus','atksassov','2007-07-07','sõpruse pst1','yes')
+insert into tootaja
+Values('leena','punane','2000-10-3','Tartu',120,1),
+('oleg','mirov','2000-5-13','Narva',200,0)
+
+update tootaja SET aadres='Tallinn', koormus=10, aktiivne=1
+where tootajaID=1;
+
