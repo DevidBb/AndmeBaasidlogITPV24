@@ -15,3 +15,12 @@ SQL-structuured query language - strukteeritud päringu keel
 DDL - data definition language 
 DML - data manipulation
 
+#Piirangud - ограничения - CINSTRAINT (5)
+# Andmeetüübid
+```
+1. int,smallint, decimal(5,2) - numbrilised
+2. varchar(30), char(5), TEXT - tekst/sümbolised
+3. date,time, datetime - kuupäev
+4. boolean, bit ,bool - loogilised
+```
+`` - ctrl+e
