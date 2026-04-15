@@ -1,4 +1,4 @@
-## sisukord
+## Sisukord
 - [põhimõisted](#põhimõisted)
 - [piirangud](#Piirangud)
 - [andmetüübid](#andmetüübid)
@@ -48,3 +48,74 @@ mitmele-mitmele
 Какие из приведенных ниже типов SQL могут использоваться для хранения действительных чисел?
 <img width="172" height="213" alt="{75C7B98E-9147-4884-B442-0AD7C52522FA}" src="https://github.com/user-attachments/assets/20f1050a-0f4d-4f02-9ccc-99775074e9e6" />
 
+
+
+SQL CODE
+``
+Create Database Logitpv24baas
+
+--ab kustutamine
+drop database veebipood;
+
+
+use Logitpv24baas;
+CREATE TABLE tootaja(
+
+tootajaID int PRIMARY KEY identity(1,1), --identiry - automaatselt kasvav arv
+eesnimi varchar(15) not null,
+perekonnanimi varchar(30) not null,
+synniaeg date,
+aadres TEXT,
+koormus int CHECK (koormus>0), -- piirang,et koormus >0
+aktiivne bit);
+
+--taabeli kuuvamine 
+select * from tootaja;
+
+--andmete lisamine tabelisse
+insert into tootaja(eesnimi,perekonnanimi,synniaeg,aadres,koormus,aktiivne)
+values ('markus','atksassov','2007-07-07','tartu','120','1');
+insert into tootaja
+Values('leena','punane','2000-10-3','Tartu',120,1),
+('oleg','mirov','2000-5-13','Narva',200,0)
+
+update tootaja SET aadres='Tallinn', koormus=10, aktiivne=1
+where tootajaID=1;
+
+create table toovahetus(
+toovahetusID int primary key identity(1,1),
+kuupaev date,
+tundideArv int,
+tootajaID int,
+FOREIGN KEY (tootajaID) References tootaja(tootajaID))
+
+select * from toovahetus;
+select * from tootaja;
+
+insert into toovahetus
+values ('2026-04-15',8.5,5)
+
+create table koolitus(
+koolitusID Int Primary key identity(1,1),
+nimetus varchar(25) not null,
+kestvus int,
+algus datetime,
+lopp datetime,
+opetaja varchar(25) not null);
+
+create table opitamine(
+opitamineID int primary key identity(1,1),
+kuuppaev date,
+tunindeArv int,
+tootajaID int,
+foreign key (tootajaID) references tootaja(tootajaID),koolitusID int,
+
+foreign key (koolitusID) references koolitus(koolitusID),tunnistus bit, hinne int)
+
+select * from opitamine;
+insert into opitamine
+values ('a','a','a','a','a');
+
+select * from koolitus;
+
+``
