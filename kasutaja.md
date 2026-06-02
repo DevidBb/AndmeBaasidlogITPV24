@@ -68,4 +68,4 @@ DENY DELETE ON opilane TO direktorDevid;
 
 5. Selle käsuga saate kontrollida, millised õigused meie kasutajal on.
 <img width="524" height="445" alt="{9240A347-A2C4-4208-8B50-63D88F6FF864}" src="https://github.com/user-attachments/assets/d3fc8ca7-77bb-4c3b-8d67-0801e6dfc3c8" />
-<img width="317" height="284" alt="{75738BF5-3D5D-47DB-BB65-7699A9304F7F}" src="https://github.com/user-attachments/assets/6d1c7d69-3c68-438f-8e22-ecf4897add07" />
+<img width="304" height="256" alt="{D6516948-9116-434D-9B98-80E5D1336AE3}" src="https://github.com/user-attachments/assets/9895919f-10af-4b8d-aa85-5569cb3c8793" />
