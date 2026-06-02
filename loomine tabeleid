@@ -1,30 +1,62 @@
-Create Database Logitpv24baas
+```sql
+create database work1
+use work1
 
---ab kustutamine
-drop database veebipood;
+--loo tabeleid ja väärtusi
+create table category (
+category_id int primary key identity(1,1),
+category_name varchar(100) not null unique)
 
+insert into category
+values('toit'), ('jook')
 
-use Logitpv24baas;
-CREATE TABLE tootaja(
+select * from category
 
-tootajaID int PRIMARY KEY identity(1,1), --identiry - automaatselt kasvav arv
-eesnimi varchar(15) not null,
-perekonnanimi varchar(30) not null,
-synniaeg date,
-aadres TEXT,
-koormus int CHECK (koormus>0), -- piirang,et koormus >0
-aktiivne bit);
+create table product(
+product_id int primary key identity(1,1),
+product_name varchar(50) not null,
+category_id int not null,
+foreign key (category_id) references category(category_id),
+price money not null check (price > 0))
 
---taabeli kuuvamine 
-select * from tootaja;
+insert into product
+values('pitsa', 1, 2.5), ('burger', 1, 3), ('sprite', 2, 1.5), ('mahl', 2, 2)
 
---andmete lisamine tabelisse
-insert into tootaja(eesnimi,perekonnanimi, synniaeg,aadres,koormus,aktiivne)
-values ('markus','atksassov','2007-07-07','sõpruse pst1','yes')
-insert into tootaja
-Values('leena','punane','2000-10-3','Tartu',120,1),
-('oleg','mirov','2000-5-13','Narva',200,0)
+select * from product
 
-update tootaja SET aadres='Tallinn', koormus=10, aktiivne=1
-where tootajaID=1;
+create table sale(
+sale_id int primary key identity(1,1),
+product_id int not null
+foreign key (product_id) references product(product_id),
+customer_id int not null
+foreign key (customer_id) references customer(customer_id),
+count int not null check (count > 0),
+date_of_sale date not null DEFAULT GETDATE())
 
+insert into sale
+values(1, 1, 2, '2026-05-27'), (2, 1, 1, '2026-05-27')
+
+insert into sale(product_id, customer_id, count)
+values(3, 2, 4)
+
+select * from sale
+
+--lisa veerg "units" tabelisse "sale"
+alter table sale add units varchar(10)
+
+select * from sale
+
+--veeru "units" andmetüübi muutmine
+alter table sale alter column units int
+
+--lisamine tabel customer
+create table customer(
+customer_id int primary key identity(1,1),
+customer_name varchar(50),
+contact varchar(50))
+
+insert into customer
+values('Dima', 'dima@gmail.com'), ('Nastja', 'nastja@gmail.com')
+
+select * from customer
+```
