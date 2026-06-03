@@ -81,7 +81,7 @@ update linnad set linnanimi='Narva', rahvaarv=676767 where linnanimi='Narva'
 ```
 
 Grant for SekretarDevid
-'''sql
+```sql
 grant select, insert, delete, update on linnad to sekretarDevid;
 deny select, delete on logi to sekretarDevid;
 ```
