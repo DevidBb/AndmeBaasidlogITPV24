@@ -1,7 +1,9 @@
 
 [Põhimõisted](README.md) | [Protseduurid](protseduurid.md) | [Kasutajad](kasutaja.md) | [Trigerid](triger.md)
 
-'''sql
+# Trigger SQL
+
+```sql
 use devitrigger24
 Create table linnad(
 linnID int PRIMARY KEY IDENTITY (1,1),
@@ -18,11 +20,11 @@ kuupaev DATETIME,
 kasutaja varchar (30),
 toiming varchar(100), -- tegevus
 andmed TEXT) -- tabelist linnad
-'''
+```
 
 
 Trigger linnaLisamine
-'''sql
+```sql
 CREATE TRIGGER linnaLisamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR INSERT
@@ -37,12 +39,12 @@ FROM inserted;
 
 insert into linnad(linnanimi, rahvaarv)
 values('Paide', 12976)
-'''
+```
 
 
 
 Trigger linnaKustutamine
-'''sql
+```sql
 --delete triger
 CREATE TRIGGER linnaKustutamine
 ON linnad --tabelinimi, mis on vaja jälgida
@@ -57,10 +59,10 @@ concat ('linn:', deleted.linnanimi, ', rahvaarv:', deleted.rahvaarv)  --andmed t
 FROM deleted;
 
 delete from linnad where linnID=1
-'''
+```
 
 Trigger linnaUuendamine
-'''sql
+```sql
 CREATE TRIGGER linnaUuendamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR UPDATE
@@ -76,10 +78,10 @@ FROM deleted inner join inserted
 on deleted.linnID=inserted.linnID;
 
 update linnad set linnanimi='Narva', rahvaarv=676767 where linnanimi='Narva'
-'''
+```
 
 Grant for SekretarDevid
 '''sql
 grant select, insert, delete, update on linnad to sekretarDevid;
 deny select, delete on logi to sekretarDevid;
-'''
+```
