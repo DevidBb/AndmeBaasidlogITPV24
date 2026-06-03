@@ -1,7 +1,7 @@
 
 [Põhimõisted](README.md) | [Protseduurid](protseduurid.md) | [Kasutajad](kasutaja.md) | [Trigerid](triger.md)
 
-'''
+'''sql
 use devitrigger24
 Create table linnad(
 linnID int PRIMARY KEY IDENTITY (1,1),
@@ -22,7 +22,7 @@ andmed TEXT) -- tabelist linnad
 
 
 Trigger linnaLisamine
-'''
+'''sql
 CREATE TRIGGER linnaLisamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR INSERT
@@ -42,7 +42,7 @@ values('Paide', 12976)
 
 
 Trigger linnaKustutamine
-'''
+'''sql
 --delete triger
 CREATE TRIGGER linnaKustutamine
 ON linnad --tabelinimi, mis on vaja jälgida
@@ -60,7 +60,7 @@ delete from linnad where linnID=1
 '''
 
 Trigger linnaUuendamine
-'''
+'''sql
 CREATE TRIGGER linnaUuendamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR UPDATE
@@ -79,7 +79,7 @@ update linnad set linnanimi='Narva', rahvaarv=676767 where linnanimi='Narva'
 '''
 
 Grant for SekretarDevid
-'''
+'''sql
 grant select, insert, delete, update on linnad to sekretarDevid;
 deny select, delete on logi to sekretarDevid;
 '''
