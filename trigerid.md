@@ -1,12 +1,28 @@
-## Trigger - päästik
 
 [Põhimõisted](README.md) | [Protseduurid](protseduurid.md) | [Kasutajad](kasutaja.md) | [Trigerid](triger.md)
 
-### SQL triggerid on spetsiaalsed andmebaasi objektid, mis käivituvad automaatselt, kui toimub teatud sündmus (nt INSERT, UPDATE või DELETE).
+'''
+use devitrigger24
+Create table linnad(
+linnID int PRIMARY KEY IDENTITY (1,1),
+linnanimi varchar(15) NOT NULL,
+rahvaarv int);
+ 
+ insert into linnad(linnanimi, rahvaarv)
+values('Tartu', 125633)
 
-Trigger lisatud kirjeid jälgimiseks tabelis “linnad” – INSERT
-Jälgib andmete sisestamine tabelis linnad ja teeb vastava kirje tabelis logi
-```sql
+
+Create table logi(
+id int PRIMARY KEY IDENTITY (1,1),
+kuupaev DATETIME,
+kasutaja varchar (30),
+toiming varchar(100), -- tegevus
+andmed TEXT) -- tabelist linnad
+'''
+
+
+Trigger linnaLisamine
+'''
 CREATE TRIGGER linnaLisamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR INSERT
@@ -18,11 +34,16 @@ SYSTEM_USER, --kasutaja mis on sisselogitud serverisse
 'on tehtud INSERT käsk',  --toiming
 concat ('linn:', inserted.linnanimi, ', rahvaarv:', inserted.rahvaarv)  --andmed tabelisy linnad
 FROM inserted;
-```
-<img width="557" height="183" alt="{E393B9CD-C3D2-4773-BC87-1A6A018D558E}" src="https://github.com/user-attachments/assets/f0533482-53b8-41db-a0f0-3026f55b878e" />
 
-Delete triger
-```sql
+insert into linnad(linnanimi, rahvaarv)
+values('Paide', 12976)
+'''
+
+
+
+Trigger linnaKustutamine
+'''
+--delete triger
 CREATE TRIGGER linnaKustutamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR DELETE
@@ -35,44 +56,11 @@ SYSTEM_USER, --kasutaja mis on sisselogitud serverisse
 concat ('linn:', deleted.linnanimi, ', rahvaarv:', deleted.rahvaarv)  --andmed tabelisy linnad
 FROM deleted;
 
-delete from linnad where linnID=3
-```
-<img width="563" height="180" alt="{16DE1A83-7BB8-42D7-ABF9-A142917E6D77}" src="https://github.com/user-attachments/assets/57a762fc-b1f8-4be3-aeed-7878461af8ae" />
+delete from linnad where linnID=1
+'''
 
-Kombineerime INSERT ja DELETE triggerid
-```sql
-CREATE TRIGGER linnaLisaKustuta
-ON linnad --tabelinimi, mis on vaja jälgida
-FOR INSERT, DELETE
-AS
-BEGIN
-SET NOCOUNT ON;
-	INSERT INTO logi(kuupaev, kasutaja, toiming, andmed)
-	SELECT
-	GETDATE(),  --aeg
-	SYSTEM_USER, --kasutaja mis on sisselogitud serverisse
-	'on tehtud INSERT käsk',  --toiming
-	concat ('linn:', inserted.linnanimi, ', rahvaarv:', inserted.rahvaarv)  --andmed tabelisy linnad
-	FROM inserted
-
-	union all -- соединить все
-
-	SELECT
-	GETDATE(),  --aeg
-	SYSTEM_USER, --kasutaja mis on sisselogitud serverisse
-	'on tehtud DELETE käsk',  --toiming
-	concat ('linn:', deleted.linnanimi, ', rahvaarv:', deleted.rahvaarv)  --andmed tabelisy linnad
-	FROM deleted;
-END;
-```
-Trigerid meie tabelis
-<img width="198" height="163" alt="{172A794F-B89F-4810-A91C-A6696DC837CE}" src="https://github.com/user-attachments/assets/dc3d24c4-4dc5-43bb-9213-72a7666b22c5" />
-
-<img width="897" height="255" alt="{F4FC29DA-67D5-4FD4-99A5-506461A1AB50}" src="https://github.com/user-attachments/assets/12a92bd1-b074-47d1-aa8b-56b176d44320" />
-
-
-UPDATE triger
-```sql
+Trigger linnaUuendamine
+'''
 CREATE TRIGGER linnaUuendamine
 ON linnad --tabelinimi, mis on vaja jälgida
 FOR UPDATE
@@ -86,5 +74,12 @@ concat ('vanad andmed - linn:', deleted.linnanimi, ', rahvaarv:', deleted.rahvaa
 ', uued andmed - linn', inserted.linnanimi, ', rahvaarv -', inserted.rahvaarv)  --andmed tabelisy linnad
 FROM deleted inner join inserted 
 on deleted.linnID=inserted.linnID;
-```
-<img width="926" height="354" alt="{490E096A-F1F8-4344-B9CF-7EBCB1D96A0E}" src="https://github.com/user-attachments/assets/80aa0287-b779-411d-82bb-7188205de623" />
+
+update linnad set linnanimi='Narva', rahvaarv=676767 where linnanimi='Narva'
+'''
+
+Grant for SekretarDevid
+'''
+grant select, insert, delete, update on linnad to sekretarDevid;
+deny select, delete on logi to sekretarDevid;
+'''
