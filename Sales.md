@@ -6,7 +6,7 @@ category_id int PRIMARY KEY identity(1,1),
 category_name varchar(25) UNIQUE);
 
 INSERT INTO categories(category_name)
-VALUES ('Ruuter');
+VALUES ('ram');
 
 SELECT * FROM categories;
 ```
@@ -20,7 +20,7 @@ brand_id int PRIMARY KEY identity(1,1),
 brand_name varchar(15) UNIQUE);
 
 INSERT INTO brands(brand_name)
-VALUES ('Samsung');
+VALUES ('msi');
 
 SELECT * FROM brands;
 ```
@@ -39,7 +39,7 @@ model_year int,
 list_ürice money);
 
 INSERT INTO products
-VALUES ('nutitelefon X10',1, 1, 2025, 500);
+VALUES (' rtx3060',1, 1, 2025, 500);
 
 select * from products;
 ```
@@ -59,7 +59,7 @@ zip_code char(5)
 )
 
 INSERT INTO stores
-VALUES ('Ülemiste', 'iphone', 'ülemiste@gmail.com', 'ülemiste tee', 'Tallinn', 'Eesti', '10319');
+  VALUES ('klick', '5566666', 'klick@gmail.com', 'eldna tee', 'Tallinn', 'Eesti', '10319');
 
 SELECT * FROM stores;
 ```
@@ -98,7 +98,7 @@ zip_code char(5)
 )
 
 insert into customers
-values('Andrei', 'Lomov', '52637294', 'andrei@gmail.com', 'Ülemiste tee', 'Tallinn','13912');
+values('Martin', 'Rumynskij', '56666666', 'martinrum@gmail.com', 'mustamae tee', 'Tallinn','16212');
 
 select * from customers
 ```
@@ -119,7 +119,7 @@ manager bit
 );
 
 insert into staff
-values('Irina', 'Rahva', 'irina@gmail.com', '52635494', 1, 1, 1);
+values('Maksim', 'Kislicin', 'Makismk@gmail.com', '52635494', 2, 2, 1);
 
 select * from staff;
 ```
