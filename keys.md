@@ -2,6 +2,15 @@
 
 [Põhimõisted](README.md) | [Protseduurid](protseduurid.md) | [Kasutajad](kasutaja.md) | [Trigerid](trigerid.md) | [Keys](keys.md)
 
+- [Primary Key ](#Primary_Key)
+- [Foreign Key ](#Foreign_Key)
+- [Unique Key](#Unique_Key)
+- [Simple Key](#Simple_Key)
+- [Composite Key ](#Composite_Key)
+- [Compound Key ](#Compound_Key)
+- [Superkey](#Superkey)
+- [Candidate key](#Candidate_key)
+- [Alternate key](#Alternate_key)
 ## Primary Key 
 
 ### Definitsioon
