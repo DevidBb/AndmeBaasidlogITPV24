@@ -27,7 +27,7 @@ Selle puhul kasutatakse samu kasutajaandmeid, millega logitakse sisse Windows op
 1. Serveritaseme kasutaja loomine (Login) Sammud Ava:
 Security → Logins Tee permklikk ja vali:
 New Login...
-<img width="703" height="658" alt="{91720B7D-EB47-439C-B814-DE89003DC1F7}" src="https://github.com/user-attachments/assets/d8ed57ac-e049-43b9-9e68-0b4cfda6a055" />
+<img width="703" height="670" alt="{5CCD37E4-A09C-41A7-95F6-EFF636881D0C}" src="https://github.com/user-attachments/assets/a5a3adfa-9d64-475f-8d19-93ff6ea60468" />
 
 Harjutamiseks võib eemaldada linnukese:  User must change password at next login.
 
@@ -35,7 +35,6 @@ Harjutamiseks võib eemaldada linnukese:  User must change password at next logi
 Menüüst Server Roles saab määrata serveri üldised õigused.
 
 Tavaliselt piisab rollist: public
-<img width="703" height="670" alt="{5CCD37E4-A09C-41A7-95F6-EFF636881D0C}" src="https://github.com/user-attachments/assets/a5a3adfa-9d64-475f-8d19-93ff6ea60468" />
 
 <img width="629" height="560" alt="{D6BFEBCB-16AB-4B54-BE90-CEFE6D23C70C}" src="https://github.com/user-attachments/assets/c49cad2c-97e5-4c3c-ba50-bf62479ab11f" />
 
