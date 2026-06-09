@@ -1,6 +1,6 @@
 # Andmebaasi võtmed (Keys)
 
-[Põhimõisted](README.md) | [Protseduurid](protseduurid.md) | [Kasutajad](kasutaja.md) | [Trigerid](triger.md) | [Keys](keys.md)
+[Põhimõisted](README.md) | [Protseduurid](protseduurid.md) | [Kasutajad](kasutaja.md) | [Trigerid](trigerid.md) | [Keys](keys.md)
 
 ## Primary Key 
 
