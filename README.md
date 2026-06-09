@@ -1,6 +1,6 @@
 ## Sisukord
 - [põhimõisted](#põhimõisted)
-- [piirangud](#Piirangud)
+- [piirangud](#piirangud)
 - [andmetüübid](#andmetüübid)
 
 
@@ -23,13 +23,13 @@ SQL-structuured query language - strukteeritud päringu keel
 DDL - data definition language 
 DML - data manipulation
 
-# Piirangud - ограничения - CINSTRAINT (5)
+# piirangud - ограничения - CINSTRAINT (5)
 1. primary key
 2. foreign key
 3. not null
 4. check
 5. 
-# Andmeetüübid
+# andmeetüübid
 ```
 1. int,smallint, decimal(5,2) - numbrilised
 2. varchar(30), char(5), TEXT - tekst/sümbolised
