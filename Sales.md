@@ -10,7 +10,8 @@ VALUES ('Ruuter');
 
 SELECT * FROM categories;
 ```
-<img width="205" height="81" alt="{46F6F411-77AC-4C26-8352-8C770060721A}" src="https://github.com/user-attachments/assets/3b4f98c9-795e-45c6-acdf-2916910ff70b" />
+<img width="234" height="111" alt="{BB16BBEE-7951-4723-A413-12C521C70F41}" src="https://github.com/user-attachments/assets/1a05834f-1caf-4796-857e-7970051a9173" />
+
 
 ```sql
 --2.brands
@@ -23,7 +24,7 @@ VALUES ('Samsung');
 
 SELECT * FROM brands;
 ```
-<img width="169" height="81" alt="{1015FEE3-6CFE-48CF-AABD-E36699D4AD06}" src="https://github.com/user-attachments/assets/5118f421-4320-4d24-baa1-48026d278ce6" />
+<img width="211" height="120" alt="{47E79BCC-2028-4F15-B14F-EB5F2B2998E3}" src="https://github.com/user-attachments/assets/c3439287-032b-4319-9031-4e3c45262f23" />
 
 ```sql
 --3.products
@@ -42,7 +43,7 @@ VALUES ('nutitelefon X10',1, 1, 2025, 500);
 
 select * from products;
 ```
-<img width="445" height="78" alt="{605CA891-E16B-4F6D-9E7E-0C411928A369}" src="https://github.com/user-attachments/assets/b6e4358a-a723-4a7c-96bd-34ef98ffae2a" />
+<img width="532" height="171" alt="{F87F51C8-2A62-4927-8FA0-BBCB1DC234D1}" src="https://github.com/user-attachments/assets/c106c68c-5269-4f28-9aee-cc386b209890" />
 
 ```sql
 --4.stores
@@ -62,7 +63,7 @@ VALUES ('Ülemiste', 'iphone', 'ülemiste@gmail.com', 'ülemiste tee', 'Tallinn'
 
 SELECT * FROM stores;
 ```
-<img width="591" height="77" alt="{D263F0E0-E82F-4130-9FA0-06AFD61F377A}" src="https://github.com/user-attachments/assets/c644baaa-2ef0-4d44-a5b8-b5a89dca96ff" />
+<img width="646" height="134" alt="{5B695077-4A6A-4210-9E0E-9C064D02154E}" src="https://github.com/user-attachments/assets/dac63d5a-8466-47cd-82c7-eda624ae3c44" />
 
 ```sql
 --5.stocks
@@ -81,7 +82,7 @@ VALUES (1, 1, 4)
 
 SELECT * FROM stocks;
 ```
-<img width="209" height="77" alt="{6021AD9C-F9B4-4C0F-81B2-BC5A5538B503}" src="https://github.com/user-attachments/assets/0cdb3e71-7f3b-4afe-a9cb-61c06fdffcca" />
+<img width="230" height="139" alt="{0E32ADE2-13B0-4D4C-8080-412FAE3B7590}" src="https://github.com/user-attachments/assets/be495a84-8ed4-4df6-84d4-173f75bfbb65" />
 
 ```sql
 --6.customers
@@ -101,7 +102,7 @@ values('Andrei', 'Lomov', '52637294', 'andrei@gmail.com', 'Ülemiste tee', 'Tall
 
 select * from customers
 ```
-<img width="610" height="76" alt="{C3031A26-6DC6-432A-9EF9-D8C96B12CF92}" src="https://github.com/user-attachments/assets/dea2d49a-267e-4de5-ada8-59ced60094db" />
+<img width="703" height="169" alt="{32B3FE30-6AE5-4C01-BFFD-8E1105E5588E}" src="https://github.com/user-attachments/assets/69572cc7-00f4-4fcc-8f9a-aaa45c43f486" />
 
 ```sql
 --7.staff
@@ -122,7 +123,7 @@ values('Irina', 'Rahva', 'irina@gmail.com', '52635494', 1, 1, 1);
 
 select * from staff;
 ```
-<img width="544" height="74" alt="{277E9367-58E3-4372-AB92-BC8387CEA518}" src="https://github.com/user-attachments/assets/1f7416f2-9ed2-4d04-9ff7-a63080271ada" />
+<img width="645" height="132" alt="{00FF8F7C-6E3E-4EEC-B509-A9996C607F4C}" src="https://github.com/user-attachments/assets/ef86e495-5ed2-4fb7-873d-3ffa5e03df7b" />
 
 ```sql
 --8. orders
@@ -145,7 +146,7 @@ values (1, 'incomplete', '2026-04-25', '2026-06-1', '2026-05-29', 1, 3);
 
 select * from orders;
 ```
-<img width="568" height="77" alt="{24A09D73-1DF5-4E31-BD7D-6CFFD8E1C02F}" src="https://github.com/user-attachments/assets/36f705b0-d38c-4c67-8c65-dcc66aec8e1a" />
+<img width="611" height="118" alt="{7C83FDDC-B7A6-4D58-901B-830C3EA1DEAA}" src="https://github.com/user-attachments/assets/c1f1cc1a-f26e-45af-854a-c1760e3dbb45" />
 
 ```sql
 --9.order_items
@@ -166,7 +167,7 @@ values (2, 2, 1, 150, 1230, 90);
 
 select * from order_items;
 ```
-<img width="367" height="96" alt="{0810C442-3577-4F32-B679-54919ABCB7FE}" src="https://github.com/user-attachments/assets/f46b9411-ddb7-41f2-b2c3-c86ed50cab78" />
+<img width="384" height="140" alt="{BD2FC493-6839-4599-81B3-B719E906F320}" src="https://github.com/user-attachments/assets/6c99e61f-8c6d-49aa-bbc5-73fce31525a8" />
 
 
 Database diagramm
