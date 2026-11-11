@@ -103,9 +103,31 @@ def parse_screenshot(name):
     return {"x": x, "y": y, "z": z, "q": [qx, qy, qz, qw], "file": name, "time": time.time()}
 
 
-def default_screens_dir():
+def documents_dirs():
+    """All places Windows may keep "Documents" (incl. OneDrive redirection)."""
+    out = []
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            from ctypes import wintypes
+            import uuid
+            guid = uuid.UUID("FDD39AD0-238F-46AF-ADB4-6C85480369C7").bytes_le  # FOLDERID_Documents
+            buf = ctypes.c_wchar_p()
+            if ctypes.windll.shell32.SHGetKnownFolderPath(ctypes.c_char_p(guid), 0, None, ctypes.byref(buf)) == 0:
+                out.append(buf.value)
+                ctypes.windll.ole32.CoTaskMemFree(buf)
+        except Exception:
+            pass
     home = os.environ.get("USERPROFILE") or os.path.expanduser("~")
-    return os.path.join(home, "Documents", "Escape from Tarkov", "Screenshots")
+    for od in filter(None, (os.environ.get("OneDrive"), os.environ.get("OneDriveConsumer"), os.path.join(home, "OneDrive"))):
+        out += [os.path.join(od, "Документы"), os.path.join(od, "Documents")]
+    out.append(os.path.join(home, "Documents"))
+    return out
+
+
+def default_screens_dir():
+    paths = [os.path.join(d, "Escape from Tarkov", "Screenshots") for d in documents_dirs()]
+    return next((p for p in paths if os.path.isdir(p)), paths[0])
 
 
 def default_logs_dir():
@@ -118,6 +140,8 @@ def default_logs_dir():
 def watch_screenshots(folder, delete, interval):
     seen = set(os.listdir(folder)) if os.path.isdir(folder) else set()
     print(f"[screens] watching {folder}")
+    if not os.path.isdir(folder):
+        print("[screens] ПАПКА НЕ НАЙДЕНА! Укажи её: --screens \"путь\"")
     while True:
         time.sleep(interval)
         if not os.path.isdir(folder):
