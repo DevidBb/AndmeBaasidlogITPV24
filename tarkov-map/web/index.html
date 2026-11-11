@@ -27,6 +27,22 @@
   .dot.ok { background:#4a4; }
   .me { width:40px; height:40px; }
   .me svg { width:40px; height:40px; transition:transform .2s; }
+  #item { position:absolute; inset:0; z-index:2000; display:none; align-items:flex-end; justify-content:center;
+          background:rgba(0,0,0,.55); padding:16px 16px calc(env(safe-area-inset-bottom) + 16px); }
+  #item.show { display:flex; }
+  .card { width:100%; max-width:440px; background:#1b1a17; border:1px solid #3a372f; border-radius:14px; padding:16px; box-sizing:border-box; }
+  .card .head { display:flex; gap:12px; align-items:center; }
+  .card img { width:64px; height:64px; object-fit:contain; background:#000; border-radius:8px; }
+  .card h2 { margin:0; font-size:17px; line-height:1.25; }
+  .card .short { color:var(--muted); font-size:13px; }
+  .prices { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+  .price { background:#24221d; border-radius:10px; padding:10px; }
+  .price .l { color:var(--muted); font-size:12px; }
+  .price .v { font-size:20px; font-weight:700; color:var(--accent); margin-top:2px; font-variant-numeric:tabular-nums; }
+  .card .alt { color:var(--muted); font-size:12px; margin-top:10px; }
+  .card .row { display:flex; gap:8px; margin-top:14px; }
+  .card .row a, .card .row button { flex:1; text-align:center; text-decoration:none; }
+  .card .row a { background:#222; color:var(--fg); border:1px solid #444; border-radius:8px; padding:8px 10px; font-size:15px; }
   .leaflet-container { background:#1a1a1a; }
   .leaflet-control-attribution { background:rgba(0,0,0,.5)!important; color:#777!important; font-size:10px; }
   .leaflet-control-attribution a { color:#999!important; }
@@ -40,6 +56,18 @@
   <button id="followBtn" class="on" title="Следовать за меткой">◎</button>
 </div>
 <div id="status"><span class="dot" id="dot"></span><span id="statusText">Подключение к ПК…</span></div>
+
+<div id="item"><div class="card">
+  <div class="head"><img id="itImg" alt=""><div><h2 id="itName"></h2><div class="short" id="itShort"></div></div></div>
+  <div class="prices">
+    <div class="price"><div class="l">Барахолка (24ч)</div><div class="v" id="itFlea">—</div></div>
+    <div class="price"><div class="l" id="itTraderL">Торговец</div><div class="v" id="itTrader">—</div></div>
+    <div class="price"><div class="l">За клетку</div><div class="v" id="itSlot">—</div></div>
+    <div class="price"><div class="l">Размер</div><div class="v" id="itSize">—</div></div>
+  </div>
+  <div class="alt" id="itAlt"></div>
+  <div class="row"><a id="itLink" target="_blank" rel="noopener">tarkov.dev</a><button id="itClose">Закрыть</button></div>
+</div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -171,10 +199,31 @@ function connect() {
       if (navigator.vibrate && lastPos && s.position.time !== lastPos.time) navigator.vibrate(60);
       showPosition(s.position);
     }
+    if (s.item && String(s.item.time) !== store.get('itemSeen')) {
+      store.set('itemSeen', String(s.item.time));
+      if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
+      showItem(s.item);
+    }
     version = s.version;
   };
   es.onerror = () => status(false, 'Нет связи с ПК — проверь, что server.py запущен');
 }
+
+// --- item price popup ---
+const rub = v => v ? Math.round(v).toLocaleString('ru-RU') + ' ₽' : '—';
+function showItem(it) {
+  $('itImg').src = it.icon; $('itName').textContent = it.name; $('itShort').textContent = it.shortName;
+  $('itFlea').textContent = rub(it.flea);
+  $('itTraderL').textContent = it.trader ? it.trader.name : 'Торговец';
+  $('itTrader').textContent = it.trader ? rub(it.trader.price) : '—';
+  $('itSlot').textContent = rub(it.fleaPerSlot);
+  $('itSize').textContent = it.size.join('×');
+  $('itAlt').textContent = it.alternatives?.length ? 'Или: ' + it.alternatives.map(a => a.name).join(', ') : '';
+  $('itLink').href = it.link;
+  $('item').classList.add('show');
+}
+$('itClose').onclick = () => $('item').classList.remove('show');
+$('item').onclick = e => { if (e.target.id === 'item') $('item').classList.remove('show'); };
 
 $('mapSel').onchange = e => selectMap(e.target.value);
 $('followBtn').onclick = () => setFollow(!follow);

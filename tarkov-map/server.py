@@ -13,8 +13,10 @@ import json
 import os
 import re
 import socket
+import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 WEB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
@@ -52,6 +54,7 @@ class State:
         self.version = 0
         self.position = None
         self.map = None
+        self.item = None
 
     def publish(self, **kw):
         with self.cond:
@@ -61,10 +64,35 @@ class State:
             self.cond.notify_all()
 
     def snapshot(self):
-        return {"version": self.version, "position": self.position, "map": self.map}
+        return {"version": self.version, "position": self.position, "map": self.map, "item": self.item}
 
 
 STATE = State()
+SCANNER = None
+items_mod = None
+SCAN_POOL = ThreadPoolExecutor(1)
+
+
+def scan_item(path, cursor, delete):
+    try:
+        for _ in range(20):  # wait until the game has finished writing the file
+            size = os.path.getsize(path)
+            time.sleep(0.15)
+            if size and size == os.path.getsize(path):
+                break
+        t0 = time.time()
+        item = SCANNER.identify(path, cursor)
+        if item:
+            print(f"[items] {item['name']}  flea={item['flea']}  ({item['score']}, {time.time() - t0:.1f}s)")
+            STATE.publish(item=item)
+    except Exception as e:
+        print(f"[items] scan failed: {e}")
+    finally:
+        if delete:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
 
 
 def parse_screenshot(name):
@@ -96,15 +124,19 @@ def watch_screenshots(folder, delete, interval):
             continue
         current = set(os.listdir(folder))
         for name in sorted(current - seen):
+            path = os.path.join(folder, name)
+            cursor = SCANNER and items_mod.grab_cursor()  # read the mouse right away
             pos = parse_screenshot(name)
             if pos:
                 print(f"[screens] x={pos['x']:.1f} y={pos['y']:.1f} z={pos['z']:.1f}")
                 STATE.publish(position=pos)
-                if delete:
-                    try:
-                        os.remove(os.path.join(folder, name))
-                    except OSError:
-                        pass
+            if cursor:
+                SCAN_POOL.submit(scan_item, path, cursor, delete)
+            elif delete and pos:
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
         seen = current
 
 
@@ -192,7 +224,21 @@ def main():
     ap.add_argument("--screens", default=default_screens_dir(), help="EFT screenshot folder")
     ap.add_argument("--logs", default=default_logs_dir(), help="EFT Logs folder (map auto-detect)")
     ap.add_argument("--delete", action="store_true", help="delete screenshots after reading")
+    ap.add_argument("--no-items", action="store_true", help="disable the item price scanner")
+    ap.add_argument("--cell", type=float, default=63, help="inventory cell size in px at 1080p")
     args = ap.parse_args()
+
+    global SCANNER, items_mod
+    if not args.no_items:
+        try:
+            import items as items_mod
+            items_mod.make_dpi_aware()
+            SCANNER = items_mod.Scanner(args.cell)
+            SCANNER.start()
+            if sys.platform != "win32":
+                print("[items] cursor reading works only on Windows")
+        except ImportError:
+            print("[items] disabled: run  pip install numpy opencv-python")
 
     threading.Thread(target=watch_screenshots, args=(args.screens, args.delete, 0.3), daemon=True).start()
     if args.logs and os.path.isdir(args.logs):
