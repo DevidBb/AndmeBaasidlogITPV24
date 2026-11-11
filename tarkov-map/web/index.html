@@ -54,6 +54,7 @@
 <div class="bar">
   <select id="mapSel"><option>Загрузка карт…</option></select>
   <button id="followBtn" class="on" title="Следовать за меткой">◎</button>
+  <button id="fsBtn" title="Во весь экран">⛶</button>
 </div>
 <div id="status"><span class="dot" id="dot"></span><span id="statusText">Подключение к ПК…</span></div>
 
@@ -227,6 +228,8 @@ $('item').onclick = e => { if (e.target.id === 'item') $('item').classList.remov
 
 $('mapSel').onchange = e => selectMap(e.target.value);
 $('followBtn').onclick = () => setFollow(!follow);
+$('fsBtn').onclick = () => document.fullscreenElement
+  ? document.exitFullscreen() : document.documentElement.requestFullscreen?.().catch(() => {});
 
 // keep the screen on while the app is open (where supported)
 async function wake() { try { await navigator.wakeLock?.request('screen'); } catch {} }

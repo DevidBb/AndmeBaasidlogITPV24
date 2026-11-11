@@ -64,6 +64,12 @@ $sh.TargetPath = $py
 $sh.Arguments = "`"$Dir\server.py`" --open"
 $sh.WorkingDirectory = $Dir
 $sh.Save()
+$lnk2 = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Tarkov Map (окно).lnk'
+$sh2 = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk2)
+$sh2.TargetPath = $py
+$sh2.Arguments = "`"$Dir\server.py`" --window"
+$sh2.WorkingDirectory = $Dir
+$sh2.Save()
 Write-Host "`nГотово! На рабочем столе появилась кнопка 'Tarkov Map'." -ForegroundColor Green
 Write-Host "Запускаю... Если Windows спросит про брандмауэр - нажми 'Разрешить'.`n"
 

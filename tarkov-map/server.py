@@ -215,6 +215,23 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
 
+def open_app_window(url):
+    """Edge/Chrome --app mode: a window without tabs and address bar."""
+    import shutil
+    import subprocess
+    import webbrowser
+    pf = [os.environ.get(k, "") for k in ("ProgramFiles(x86)", "ProgramFiles", "LOCALAPPDATA")]
+    candidates = [os.path.join(b, *p) for b in pf if b for p in (
+        ("Microsoft", "Edge", "Application", "msedge.exe"),
+        ("Google", "Chrome", "Application", "chrome.exe"))]
+    candidates += [shutil.which(n) for n in ("msedge", "chrome", "google-chrome", "chromium")]
+    for exe in candidates:
+        if exe and os.path.exists(exe):
+            subprocess.Popen([exe, f"--app={url}", "--window-size=900,900"])
+            return
+    webbrowser.open(url)
+
+
 def lan_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -233,6 +250,7 @@ def main():
     ap.add_argument("--logs", default=default_logs_dir(), help="EFT Logs folder (map auto-detect)")
     ap.add_argument("--delete", action="store_true", help="delete screenshots after reading")
     ap.add_argument("--open", action="store_true", help="open the QR code page on the PC")
+    ap.add_argument("--window", action="store_true", help="open the map in a borderless browser window on the PC")
     ap.add_argument("--no-items", action="store_true", help="disable the item price scanner")
     ap.add_argument("--cell", type=float, default=63, help="inventory cell size in px at 1080p")
     args = ap.parse_args()
@@ -260,6 +278,8 @@ def main():
     if args.open:
         import webbrowser
         threading.Timer(1.0, webbrowser.open, (f"http://localhost:{args.port}/connect.html",)).start()
+    if args.window:
+        threading.Timer(1.0, open_app_window, (f"http://localhost:{args.port}/",)).start()
     srv.serve_forever()
 
 
