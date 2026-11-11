@@ -184,6 +184,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if self.path == "/api/info":
+            body = json.dumps({"url": f"http://{lan_ip()}:{self.server.server_port}"}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if self.path == "/events":
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream")
@@ -224,6 +232,7 @@ def main():
     ap.add_argument("--screens", default=default_screens_dir(), help="EFT screenshot folder")
     ap.add_argument("--logs", default=default_logs_dir(), help="EFT Logs folder (map auto-detect)")
     ap.add_argument("--delete", action="store_true", help="delete screenshots after reading")
+    ap.add_argument("--open", action="store_true", help="open the QR code page on the PC")
     ap.add_argument("--no-items", action="store_true", help="disable the item price scanner")
     ap.add_argument("--cell", type=float, default=63, help="inventory cell size in px at 1080p")
     args = ap.parse_args()
@@ -248,6 +257,9 @@ def main():
 
     srv = ThreadingHTTPServer(("0.0.0.0", args.port), Handler)
     print(f"\n  Open on your phone:  http://{lan_ip()}:{args.port}\n")
+    if args.open:
+        import webbrowser
+        threading.Timer(1.0, webbrowser.open, (f"http://localhost:{args.port}/connect.html",)).start()
     srv.serve_forever()
 
 

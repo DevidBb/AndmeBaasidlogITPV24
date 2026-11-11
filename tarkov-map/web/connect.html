@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarkov Map</title>
+<link rel="icon" href="icon.svg">
+<style>
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#111; color:#e8e2d0; font:16px system-ui, sans-serif; text-align:center; }
+  #qr { background:#fff; padding:16px; border-radius:12px; display:inline-block; margin:20px 0; }
+  .url { font-size:22px; color:#c9a54b; font-weight:600; }
+  .muted { color:#8a8576; font-size:14px; max-width:420px; margin:12px auto 0; line-height:1.5; }
+</style>
+</head>
+<body>
+<div>
+  <h1>Tarkov Map запущен</h1>
+  <div>Наведи камеру телефона на код:</div>
+  <div id="qr"></div>
+  <div class="url" id="url"></div>
+  <p class="muted">Телефон должен быть в той же Wi-Fi сети. Потом в браузере телефона: «Добавить на главный экран».
+  Это окно можно закрыть, но чёрное окно сервера не закрывай, пока играешь.</p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+fetch('api/info').then(r => r.json()).then(i => {
+  document.getElementById('url').textContent = i.url;
+  try { new QRCode(document.getElementById('qr'), { text: i.url, width: 240, height: 240 }); }
+  catch { document.getElementById('qr').style.display = 'none'; }
+});
+</script>
+</body>
+</html>

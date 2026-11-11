@@ -8,7 +8,16 @@ EFT пишет координаты в имя файла скриншота
 скриншотов и сразу отправляет позицию на телефон. Карты (SVG/тайлы) и их калибровка берутся с
 [tarkov.dev](https://tarkov.dev) (open-source).
 
-## Запуск
+## Установка в одну команду (Windows)
+Открой PowerShell (Win → «PowerShell»), вставь и нажми Enter:
+```powershell
+irm https://raw.githubusercontent.com/DevidBb/AndmeBaasidlogITPV24/claude/optimistic-dijkstra-b4tprc/tarkov-map/install.ps1 | iex
+```
+Оно само поставит Python (если нет), скачает приложение, создаст кнопку **Tarkov Map** на рабочем столе
+и откроет страницу с QR-кодом — наведи камеру телефона, и карта откроется.
+Дальше просто жми кнопку на рабочем столе.
+
+## Запуск вручную
 1. Установи Python 3 на ПК (галочка «Add to PATH»).
 2. Запусти `start.bat` (или `python server.py`). Он напишет адрес вида `http://192.168.1.10:8080`.
 3. Телефон в той же Wi-Fi сети → открой этот адрес в Chrome/Safari →
