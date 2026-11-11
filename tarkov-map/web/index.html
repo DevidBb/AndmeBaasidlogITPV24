@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#111">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tarkov Map</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root { --bg:#111; --panel:rgba(20,20,20,.9); --fg:#e8e2d0; --accent:#c9a54b; --muted:#8a8576; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:14px system-ui, sans-serif; overflow:hidden; }
+  #map { position:absolute; inset:0; background:#1a1a1a; }
+  .bar { position:absolute; left:0; right:0; top:0; z-index:1000; display:flex; gap:8px; align-items:center;
+         padding:calc(env(safe-area-inset-top) + 8px) 12px 8px; background:var(--panel); }
+  select, button { background:#222; color:var(--fg); border:1px solid #444; border-radius:8px; padding:8px 10px; font-size:15px; }
+  select { flex:1; min-width:0; }
+  button.on { border-color:var(--accent); color:var(--accent); }
+  #status { position:absolute; left:12px; bottom:calc(env(safe-area-inset-bottom) + 12px); z-index:1000;
+            background:var(--panel); padding:6px 10px; border-radius:8px; color:var(--muted); font-size:12px; }
+  #status b { color:var(--fg); font-weight:600; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#a33; margin-right:6px; }
+  .dot.ok { background:#4a4; }
+  .me { width:40px; height:40px; }
+  .me svg { width:40px; height:40px; transition:transform .2s; }
+  #item { position:absolute; inset:0; z-index:2000; display:none; align-items:flex-end; justify-content:center;
+          background:rgba(0,0,0,.55); padding:16px 16px calc(env(safe-area-inset-bottom) + 16px); }
+  #item.show { display:flex; }
+  .card { width:100%; max-width:440px; background:#1b1a17; border:1px solid #3a372f; border-radius:14px; padding:16px; box-sizing:border-box; }
+  .card .head { display:flex; gap:12px; align-items:center; }
+  .card img { width:64px; height:64px; object-fit:contain; background:#000; border-radius:8px; }
+  .card h2 { margin:0; font-size:17px; line-height:1.25; }
+  .card .short { color:var(--muted); font-size:13px; }
+  .prices { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+  .price { background:#24221d; border-radius:10px; padding:10px; }
+  .price .l { color:var(--muted); font-size:12px; }
+  .price .v { font-size:20px; font-weight:700; color:var(--accent); margin-top:2px; font-variant-numeric:tabular-nums; }
+  .card .alt { color:var(--muted); font-size:12px; margin-top:10px; }
+  .card .row { display:flex; gap:8px; margin-top:14px; }
+  .card .row a, .card .row button { flex:1; text-align:center; text-decoration:none; }
+  .card .row a { background:#222; color:var(--fg); border:1px solid #444; border-radius:8px; padding:8px 10px; font-size:15px; }
+  .leaflet-container { background:#1a1a1a; }
+  .leaflet-control-attribution { background:rgba(0,0,0,.5)!important; color:#777!important; font-size:10px; }
+  .leaflet-control-attribution a { color:#999!important; }
+  .leaflet-bottom.leaflet-right { margin-bottom:env(safe-area-inset-bottom); }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="bar">
+  <select id="mapSel"><option>Загрузка карт…</option></select>
+  <button id="followBtn" class="on" title="Следовать за меткой">◎</button>
+  <button id="fsBtn" title="Во весь экран">⛶</button>
+</div>
+<div id="status"><span class="dot" id="dot"></span><span id="statusText">Подключение к ПК…</span></div>
+
+<div id="item"><div class="card">
+  <div class="head"><img id="itImg" alt=""><div><h2 id="itName"></h2><div class="short" id="itShort"></div></div></div>
+  <div class="prices">
+    <div class="price"><div class="l">Барахолка (24ч)</div><div class="v" id="itFlea">—</div></div>
+    <div class="price"><div class="l" id="itTraderL">Торговец</div><div class="v" id="itTrader">—</div></div>
+    <div class="price"><div class="l">За клетку</div><div class="v" id="itSlot">—</div></div>
+    <div class="price"><div class="l">Размер</div><div class="v" id="itSize">—</div></div>
+  </div>
+  <div class="alt" id="itAlt"></div>
+  <div class="row"><a id="itLink" target="_blank" rel="noopener">tarkov.dev</a><button id="itClose">Закрыть</button></div>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const MAPS_URL = 'https://raw.githubusercontent.com/the-hideout/tarkov-dev/main/src/data/maps.json';
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+
+let maps = {}, current = null, map = null, base = null, svgEl = null, marker = null;
+let lastPos = null, follow = true;
+
+// --- coordinate system (same math as tarkov.dev) ---
+function rotate(ll, deg) {
+  if (!deg) return ll;
+  const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+  return L.latLng(ll.lng * s + ll.lat * c, ll.lng * c - ll.lat * s);
+}
+function makeCRS(m) {
+  const t = m.transform || [1, 0, 1, 0];
+  return L.extend({}, L.CRS.Simple, {
+    transformation: new L.Transformation(t[0], t[1], -t[2], t[3]),
+    projection: L.extend({}, L.Projection.LonLat, {
+      project: ll => L.Projection.LonLat.project(rotate(ll, m.coordinateRotation)),
+      unproject: p => rotate(L.Projection.LonLat.unproject(p), -m.coordinateRotation),
+    }),
+  });
+}
+const bounds = b => L.latLngBounds([b[0][1], b[0][0]], [b[1][1], b[1][0]]);
+const toLatLng = (x, z) => L.latLng(z, x);
+
+// --- maps list ---
+async function loadMaps() {
+  const data = await (await fetch(MAPS_URL)).json();
+  for (const g of data) {
+    const m = g.maps.find(m => m.projection === 'interactive');
+    if (m) maps[g.normalizedName] = m;
+  }
+  const names = Object.keys(maps).sort();
+  $('mapSel').innerHTML = names.map(n =>
+    `<option value="${n}">${n.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>`).join('');
+  const saved = store.get('map');
+  selectMap(maps[saved] ? saved : names.includes('customs') ? 'customs' : names[0]);
+}
+
+async function selectMap(id) {
+  if (!maps[id] || current === id) return;
+  current = id; store.set('map', id); $('mapSel').value = id;
+  const m = maps[id];
+  if (map) map.remove();
+  svgEl = null; marker = null;
+  map = L.map('map', {
+    crs: makeCRS(m), zoomControl: false, attributionControl: true,
+    minZoom: m.minZoom ?? 1, maxZoom: m.maxZoom ?? 6, zoomSnap: 0.25,
+  });
+  map.attributionControl.setPrefix(false);
+  map.attributionControl.addAttribution(
+    `Карта: <a href="${m.authorLink || 'https://tarkov.dev'}">${m.author || 'tarkov.dev'}</a> / tarkov.dev`);
+  const b = bounds(m.svgBounds || m.bounds);
+  map.fitBounds(b);
+  if (m.svgPath) {
+    try {
+      const txt = await (await fetch(m.svgPath)).text();
+      if (current !== id) return;
+      svgEl = new DOMParser().parseFromString(txt, 'image/svg+xml').documentElement;
+      base = L.svgOverlay(svgEl, b).addTo(map);
+      updateFloors();
+    } catch {
+      base = L.imageOverlay(m.svgPath, b).addTo(map);
+    }
+  } else if (m.tilePath) {
+    base = L.tileLayer(m.tilePath, { tileSize: m.tileSize || 256, bounds: b,
+      minZoom: m.minZoom, maxZoom: m.maxZoom, noWrap: true }).addTo(map);
+  }
+  map.on('dragstart', () => setFollow(false));
+  if (lastPos) showPosition(lastPos);
+}
+
+// Show the floor that matches the player's height (SVG maps only).
+function updateFloors() {
+  const m = maps[current];
+  if (!svgEl || !m.layers) return;
+  const y = lastPos ? lastPos.y : null;
+  for (const l of m.layers) {
+    if (!l.svgLayer) continue;
+    const g = svgEl.querySelector('#' + CSS.escape(l.svgLayer));
+    if (!g) continue;
+    const on = y !== null && (l.extents || []).some(e => e.height && y >= e.height[0] && y < e.height[1]);
+    g.style.display = on ? '' : 'none';
+  }
+}
+
+// --- player marker ---
+const ARROW = `<svg viewBox="0 0 40 40"><path d="M20 3 L30 33 L20 26 L10 33 Z" fill="#ff3b30" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
+function forward(q) { // rotate (0,0,1) by quaternion -> game-space x,z
+  const [x, y, z, w] = q;
+  return { x: 2 * (x * z + w * y), z: 1 - 2 * (x * x + y * y) };
+}
+function showPosition(p) {
+  lastPos = p;
+  if (!map || !maps[current]) return;
+  const ll = toLatLng(p.x, p.z);
+  if (!marker) {
+    marker = L.marker(ll, { icon: L.divIcon({ className: 'me', html: ARROW, iconSize: [40, 40] }), zIndexOffset: 1000 }).addTo(map);
+  } else marker.setLatLng(ll);
+  const f = forward(p.q);
+  const a = map.latLngToLayerPoint(ll), b = map.latLngToLayerPoint(toLatLng(p.x + f.x * 10, p.z + f.z * 10));
+  const deg = Math.atan2(b.x - a.x, a.y - b.y) * 180 / Math.PI;
+  marker.getElement().querySelector('svg').style.transform = `rotate(${deg}deg)`;
+  updateFloors();
+  if (follow) map.setView(ll, Math.max(map.getZoom(), (maps[current].maxZoom ?? 6) - 2));
+  const t = new Date(p.time * 1000).toLocaleTimeString();
+  status(true, `<b>${p.x.toFixed(0)}, ${p.z.toFixed(0)}</b> · высота ${p.y.toFixed(1)} · ${t}`);
+}
+
+function setFollow(v) { follow = v; $('followBtn').classList.toggle('on', v); if (v && lastPos) showPosition(lastPos); }
+function status(ok, html) { $('dot').classList.toggle('ok', ok); $('statusText').innerHTML = html; }
+
+// --- live updates from the PC ---
+function connect() {
+  let version = -1;
+  const es = new EventSource('events');
+  es.onopen = () => { if (!lastPos) status(true, 'Подключено. Сделай скрин в игре (PrtSc).'); };
+  es.onmessage = e => {
+    const s = JSON.parse(e.data);
+    if (s.map && maps[s.map] && s.map !== current) selectMap(s.map);
+    if (s.position && s.version !== version) {
+      if (navigator.vibrate && lastPos && s.position.time !== lastPos.time) navigator.vibrate(60);
+      showPosition(s.position);
+    }
+    if (s.item && String(s.item.time) !== store.get('itemSeen')) {
+      store.set('itemSeen', String(s.item.time));
+      if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
+      showItem(s.item);
+    }
+    version = s.version;
+  };
+  es.onerror = () => status(false, 'Нет связи с ПК — проверь, что server.py запущен');
+}
+
+// --- item price popup ---
+const rub = v => v ? Math.round(v).toLocaleString('ru-RU') + ' ₽' : '—';
+function showItem(it) {
+  $('itImg').src = it.icon; $('itName').textContent = it.name; $('itShort').textContent = it.shortName;
+  $('itFlea').textContent = rub(it.flea);
+  $('itTraderL').textContent = it.trader ? it.trader.name : 'Торговец';
+  $('itTrader').textContent = it.trader ? rub(it.trader.price) : '—';
+  $('itSlot').textContent = rub(it.fleaPerSlot);
+  $('itSize').textContent = it.size.join('×');
+  $('itAlt').textContent = it.alternatives?.length ? 'Или: ' + it.alternatives.map(a => a.name).join(', ') : '';
+  $('itLink').href = it.link;
+  $('item').classList.add('show');
+}
+$('itClose').onclick = () => $('item').classList.remove('show');
+$('item').onclick = e => { if (e.target.id === 'item') $('item').classList.remove('show'); };
+
+$('mapSel').onchange = e => selectMap(e.target.value);
+$('followBtn').onclick = () => setFollow(!follow);
+$('fsBtn').onclick = () => document.fullscreenElement
+  ? document.exitFullscreen() : document.documentElement.requestFullscreen?.().catch(() => {});
+
+// keep the screen on while the app is open (where supported)
+async function wake() { try { await navigator.wakeLock?.request('screen'); } catch {} }
+document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && wake());
+wake();
+
+loadMaps().catch(() => status(false, 'Не удалось загрузить список карт (нужен интернет)')).finally(connect);
+</script>
+</body>
+</html>
